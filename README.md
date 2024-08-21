@@ -49,7 +49,7 @@ middleware
 ```go
 func _(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// logic before
+		// logic before request
 		next.ServeHTTP(w, r)
 		// logic after request
 	})
@@ -58,8 +58,6 @@ func _(next http.Handler) http.Handler {
 
 ## Handlers
 
-
-### Handler Skeleton
 the skeleton for a handler
 ```go
 vbf.Add(mux, "GET /", func(w http.ResponseWriter, r *http.Request) {
@@ -77,9 +75,7 @@ we could do something like this
 }, vbf.Logger, AnotherMiddleware, SomeOtherMiddleware) // ect..
 ```
 
-### 404 Page
-
-on the `GET /` or `POST /` (or other methods), you can address 404s like so
+404 pages can be addressed at `GET /`, `POST /`, `PUT /`, ect
 ```go
 vbf.Add(mux, "GET /", func(w http.ResponseWriter, r *http.Request) {
     if r.Path.URL != "/" {
@@ -97,3 +93,41 @@ vbf.Add(mux, "GET /about", func(w http.ResponseWriter, r *http.Request) {
 }, vbf.Logger)
 ```
 
+## Middleware
+
+the skeleton for middleware
+```go
+func _(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// logic before request
+		next.ServeHTTP(w, r)
+		// logic after request
+	})
+}
+```
+
+create a new middleware which sets some data in the request context
+```go
+func NewMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r = vbf.SetCtx("someData", "Hello, Context!", r)
+		next.ServeHTTP(w, r)
+	})
+}
+```
+
+create another middleware which gets the context data and logs it to the console 
+```go
+func AnotherMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		val := vbf.GetCtx("someData", r).(string)
+		next.ServeHTTP(w, r)
+	})
+}
+```
+
+be sure to convert the data back to its original type
+```go
+r = vbf.SetCtx("someData", "Hello, Context!", r) // context data is a string
+val := vbf.GetCtx("someData", r).(string) // annotate type as a string to match
+```

@@ -30,6 +30,19 @@ func Logger(next http.Handler) http.Handler {
 	})
 }
 
+func NewMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r = SetCtx("someData", "Hello, Context!", r)
+		next.ServeHTTP(w, r)
+	})
+}
+
+func AnotherMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		next.ServeHTTP(w, r)
+	})
+}
+
 // when called, your server will serve a favicon if it is located at `./favicon.ico`
 func HandleFavicon(mux *http.ServeMux, middleware ...func(http.Handler) http.Handler) {
 	mux.HandleFunc("GET /favicon.ico", func(w http.ResponseWriter, r *http.Request) {
