@@ -12,7 +12,11 @@ This snippet will:
 
 2. Handle serving the favicon.ico at `./favicon.ico` and static files found at `./static`.
 
-3. Sends a "hello world" string back if you ping `localhost:8080/`
+3. Sends a "hello world" string back if you ping `localhost:8080/` using:
+
+```bash
+curl localhost:8080/
+```
 
 4. Logs the request in the console using the `vbf.Logger` middleware.
 ```go
