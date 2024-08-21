@@ -20,6 +20,23 @@ func chain(h http.HandlerFunc, middleware ...func(http.Handler) http.Handler) ht
 	return finalHandler
 }
 
+// a middleware to test setting the request context
+func mwSetCtx(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r = SetCtx("someData", "Hello, World!", r)
+		next.ServeHTTP(w, r)
+	})
+}
+
+// a middleware to test getting the request context
+func mwGetCtx(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		val := GetCtx("someData", r).(string)
+		fmt.Println(val)
+		next.ServeHTTP(w, r)
+	})
+}
+
 // a logging middleware which logs out details about the request
 func Logger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -27,21 +44,6 @@ func Logger(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 		endTime := time.Since(startTime)
 		fmt.Printf("[%s][%s][%s]\n", r.Method, r.URL.Path, endTime)
-	})
-}
-
-func MwSetCtx(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		r = SetCtx("someData", "Hello, World!", r)
-		next.ServeHTTP(w, r)
-	})
-}
-
-func MwGetCtx(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		val := GetCtx("someData", r).(string)
-		fmt.Println(val)
-		next.ServeHTTP(w, r)
 	})
 }
 

@@ -1,8 +1,7 @@
 # vbf
-**v**ery **b**est **f**ramework, or vbf for short. ✨
+**v**ery **b**est **f**ramework ✨
 
-## What is vbf?
-vbf aims to make it as easy as possible to write web servers in go, no matter the cost. 💣
+vbf aims to make it as easy as possible to write and work with web servers in go. That's it. 💣
 
 ## Quickstart
 This snippet will:
@@ -37,6 +36,8 @@ func main() {
 ```
 
 ## Skeletons
+
+A lot of components you'll be building with have a clear structure. Copy and paste! 😈
 
 handler
 ```go
@@ -101,6 +102,6 @@ func MwGetCtx(next http.Handler) http.Handler {
 
 be sure to convert the data back to its original type
 ```go
-r = vbf.SetCtx("someData", "Hello, Context!", r) // context data is a string
+r = vbf.SetCtx("someData", "Hello, World!", r) // context data is a string
 val := vbf.GetCtx("someData", r).(string) // annotate type as a string to match
 ```
