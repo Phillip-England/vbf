@@ -9,16 +9,12 @@ vbf aims to make it as easy as possible to write web servers in go, no matter th
 This snippet will:
 
 1. start an http server on `localhost:8080`
-
 2. handle serving the favicon.ico at `./favicon.ico` and static files found at `./static`
-
 3. response with a "hello world" string if you ping `localhost:8080/` using:
-
 ```bash
 curl localhost:8080/
 ```
-
-4. logs the request in the console using the `vbf.Logger` middleware
+4. log the request in the console using the `vbf.Logger` middleware
 ```go
 package main
 
