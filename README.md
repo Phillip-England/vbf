@@ -36,6 +36,26 @@ func main() {
 }
 ```
 
+## Skeletons
+
+handler
+```go
+vbf.Add(mux, "GET /", func(w http.ResponseWriter, r *http.Request) {
+
+}, vbf.Logger)
+```
+
+middleware
+```go
+func _(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// logic before
+		next.ServeHTTP(w, r)
+		// logic after request
+	})
+}
+```
+
 ## Handlers
 
 
