@@ -9,7 +9,7 @@ import (
 )
 
 // used to setup key for setting request context data
-type contextKey string
+type CtxKey string
 
 // used to chain middleware and handlers in the proper sequence
 func chain(h http.HandlerFunc, middleware ...func(http.Handler) http.Handler) http.Handler {
@@ -30,15 +30,17 @@ func Logger(next http.Handler) http.Handler {
 	})
 }
 
-func NewMiddleware(next http.Handler) http.Handler {
+func MwSetCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		r = SetCtx("someData", "Hello, Context!", r)
+		r = SetCtx("someData", "Hello, World!", r)
 		next.ServeHTTP(w, r)
 	})
 }
 
-func AnotherMiddleware(next http.Handler) http.Handler {
+func MwGetCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		val := GetCtx("someData", r).(string)
+		fmt.Println(val)
 		next.ServeHTTP(w, r)
 	})
 }
@@ -74,14 +76,14 @@ func Add(mux *http.ServeMux, path string, handler http.HandlerFunc, middleware .
 
 // to be used inside a middleware or handler to share context data with other middleware/handlers
 func SetCtx(key string, val any, r *http.Request) *http.Request {
-	ctx := context.WithValue(r.Context(), contextKey(key), val)
+	ctx := context.WithValue(r.Context(), CtxKey(key), val)
 	r = r.WithContext(ctx)
 	return r
 }
 
 // to be used inside a middleware or handler to get context data set in other middleware/handlers
 func GetCtx(key string, r *http.Request) any {
-	val := r.Context().Value(contextKey(key))
+	val := r.Context().Value(CtxKey(key))
 	return val
 }
 
