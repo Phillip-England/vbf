@@ -55,3 +55,12 @@ func Route(mux *http.ServeMux, path string, handler http.HandlerFunc, middleware
 		chain(handler, middleware...).ServeHTTP(w, r)
 	})
 }
+
+func Serve(mux *http.ServeMux, port string) error {
+	fmt.Println("starting server on port " + port + " 💎")
+	err := http.ListenAndServe(":"+port, mux)
+	if err != nil {
+		return err
+	}
+	return nil
+}

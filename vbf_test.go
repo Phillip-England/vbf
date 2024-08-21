@@ -16,7 +16,7 @@ func Test_Xerus(t *testing.T) {
 	}, Logger)
 
 	fmt.Println("starting server on port " + port + " 💎")
-	err := http.ListenAndServe(":8080", mux)
+	err := http.ListenAndServe(":"+port, mux)
 	if err != nil {
 		panic(err)
 	}
