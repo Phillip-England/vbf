@@ -1,24 +1,24 @@
 # vbf
 **v**ery **b**est **f**ramework, or vbf for short. ✨
 
-## Philsophy
-We do what we do without changing the go standards. All the code **you'll** write when using vbf could *easily* be migrated over to a vanilla go project. ❤️ 
+## What is vbf?
+vbf aims to make it as easy as possible to write web servers in go, no matter the cost. 💣
 
 ## Quickstart
 
 This snippet will:
 
-1. Get an http server running on `localhost:8080`. 
+1. start an http server on `localhost:8080`
 
-2. Handle serving the favicon.ico at `./favicon.ico` and static files found at `./static`.
+2. handle serving the favicon.ico at `./favicon.ico` and static files found at `./static`
 
-3. Sends a "hello world" string back if you ping `localhost:8080/` using:
+3. response with a "hello world" string if you ping `localhost:8080/` using:
 
 ```bash
 curl localhost:8080/
 ```
 
-4. Logs the request in the console using the `vbf.Logger` middleware.
+4. logs the request in the console using the `vbf.Logger` middleware
 ```go
 package main
 
