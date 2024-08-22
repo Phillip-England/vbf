@@ -1,107 +1,71 @@
-# vbf
+# vbf (Very Best Framework)
 **v**ery **b**est **f**ramework ✨
-
-vbf aims to make it as easy as possible to write and work with web servers in go. That's it. 💣
+A set of functions which make it easier to work with the go standard http library. That's it. 💣
 
 ## Quickstart
-This snippet will:
 
-1. start an http server on `localhost:8080`
-2. handle serving the favicon.ico at `./favicon.ico` and static files found at `./static`
-3. response with a "hello world" string if you ping `localhost:8080/` using:
-```bash
-curl localhost:8080/
-```
-4. log the request in the console using the `vbf.Logger` middleware
+the quickest way to get a server up
 ```go
-package main
-
-import (
-    "fmt"
-    "github.com/Phillip-England/vbf"
-)
-
 func main() {
-    mux := http.NewServeMux()
-    vbf.HandleFavicon(mux, Logger)
-	vbf.HandleStaticFiles(mux, Logger)
-    vbf.Add(mux, "GET /", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("hello world"))
-	}, vbf.Logger)
-    err := vbf.Serve(mux, "8080")
+
+	mux, gCtx := VeryBestFramework()
+
+	AddRoute("GET /", mux, gCtx, func(w http.ResponseWriter, r *http.Request) {
+		WriteHTML(w, "<h1>Hello, World!</h1>")
+	}, MwLogger)
+
+	err := Serve(mux, "8080")
 	if err != nil {
 		panic(err)
 	}
 }
 ```
 
-## Skeletons
+## Global Context
 
-A lot of components you'll be building with have a clear structure. Copy and paste! 😈
-
-handler
+share context values from the outside of the application with the inside middleware/handlers
 ```go
-vbf.Add(mux, "GET /", func(w http.ResponseWriter, r *http.Request) {
+func main() {
 
-}, vbf.Logger)
-```
+	mux, gCtx := vbf.VeryBestFramework()
 
-middleware
-```go
-func _(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// logic before request
-		next.ServeHTTP(w, r)
-		// logic after request
-	})
+    vbf.SetGlobalContext(gCtx, "KEY", "<h1>Hello, Context!</h1>") // <--- string
+
+	vbf.AddRoute("GET /", mux, gCtx, func(w http.ResponseWriter, r *http.Request) {
+        val, _ := vbf.GetContext("KEY", r).(string) // <--- convert back to string
+		vbf.WriteHTML(w, val)
+	}, vbf.MwLogger)
+
+	err := vbf.Serve(mux, "8080")
+	if err != nil {
+		panic(err)
+	}
 }
-```
-
-## Handlers
-
-a basic route
-```go
-vbf.Add(mux, "GET /about", func(w http.ResponseWriter, r *http.Request) {
-    w.Write([]byte("<h1>Hello, About Page!</h1>"))
-}, vbf.Logger)
-```
-
-404 pages can be addressed at `GET /`, `POST /`, `PUT /`, ect
-```go
-vbf.Add(mux, "GET /", func(w http.ResponseWriter, r *http.Request) {
-    if r.Path.URL != "/" {
-        w.Write([]byte("<h1>404 Not Found</h1>"))
-        return
-    }
-    w.Write([]byte("<h1>Hello, World!</h1>"))
-}, vbf.Logger)
 ```
 
 ## Middleware
 
-create a new middleware which sets some data in the request context
+make a new middleware
 ```go
-func MwSetCtx(next http.Handler) http.Handler {
+func NewMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		r = vbf.SetCtx("someData", "Hello, World!", r)
+		// logic before request
 		next.ServeHTTP(w, r)
+        // logic after request
 	})
 }
 ```
 
-create another middleware which gets the context data and logs it to the console 
+use the middleware in a handler (the last middleware in the chain will be called first)
 ```go
-func MwGetCtx(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		val := vbf.GetCtx("someData", r).(string)
-		fmt.Println(val)
-		next.ServeHTTP(w, r)
-	})
-}
-```
+func main() {
+    // --snip
 
-be sure to convert the data back to its original type
-```go
-r = vbf.SetCtx("someData", "Hello, World!", r) // context data is a string
-val := vbf.GetCtx("someData", r).(string) // annotate type as a string to match
+	vbf.AddRoute("GET /", mux, gCtx, func(w http.ResponseWriter, r *http.Request) {
+        val, _ := vbf.GetContext("KEY", r).(string) // <--- convert back to string
+		vbf.WriteHTML(w, val)
+	}, vbf.MwLogger, NewMiddleware) // <--- middlware added here
+
+    // --snip
+}
 ```

@@ -3,13 +3,28 @@ package vbf
 import (
 	"context"
 	"fmt"
+	"html/template"
 	"net/http"
+	"os"
 	"path/filepath"
 	"time"
 )
 
-// used to setup key for setting request context data
-type CtxKey string
+//=====================================
+// INIT
+//=====================================
+
+// gives you a few things you need to get an app up and running
+func VeryBestFramework() (*http.ServeMux, map[string]any) {
+	mux := http.NewServeMux()
+	HandleFavicon(mux)
+	HandleStaticFiles(mux)
+	return http.NewServeMux(), make(map[string]any)
+}
+
+//=====================================
+// MIDDLEWARE
+//=====================================
 
 // used to chain middleware and handlers in the proper sequence
 func chain(h http.HandlerFunc, middleware ...func(http.Handler) http.Handler) http.Handler {
@@ -21,24 +36,15 @@ func chain(h http.HandlerFunc, middleware ...func(http.Handler) http.Handler) ht
 }
 
 // a middleware to test setting the request context
-func mwSetCtx(next http.Handler) http.Handler {
+func MwContentHTML(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		r = SetCtx("someData", "Hello, World!", r)
-		next.ServeHTTP(w, r)
-	})
-}
-
-// a middleware to test getting the request context
-func mwGetCtx(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		val := GetCtx("someData", r).(string)
-		fmt.Println(val)
+		w.Header().Add("Content-Type", "text/html")
 		next.ServeHTTP(w, r)
 	})
 }
 
 // a logging middleware which logs out details about the request
-func Logger(next http.Handler) http.Handler {
+func MwLogger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		startTime := time.Now()
 		next.ServeHTTP(w, r)
@@ -46,6 +52,10 @@ func Logger(next http.Handler) http.Handler {
 		fmt.Printf("[%s][%s][%s]\n", r.Method, r.URL.Path, endTime)
 	})
 }
+
+//=====================================
+// PROVIDED HANDLERS
+//=====================================
 
 // when called, your server will serve a favicon if it is located at `./favicon.ico`
 func HandleFavicon(mux *http.ServeMux, middleware ...func(http.Handler) http.Handler) {
@@ -69,29 +79,107 @@ func HandleStaticFiles(mux *http.ServeMux, middleware ...func(http.Handler) http
 	})
 }
 
+//=====================================
+// REQUEST / RESPONSE HELPERS
+//=====================================
+
+// responses from a handler with a string while setting the appropriate headers
+func WriteHTML(w http.ResponseWriter, content string) {
+	w.Header().Add("Content-Type", "text/html")
+	w.Write([]byte(content))
+}
+
+//=====================================
+// ROUTING
+//=====================================
+
 // adds a new route to your server
-func Add(mux *http.ServeMux, path string, handler http.HandlerFunc, middleware ...func(http.Handler) http.Handler) {
+func AddRoute(path string, mux *http.ServeMux, globalCtx map[string]any, handler http.HandlerFunc, middleware ...func(http.Handler) http.Handler) {
 	mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		r = SetContext("GLOBAL", globalCtx, r)
 		chain(handler, middleware...).ServeHTTP(w, r)
 	})
 }
 
+//=====================================
+// CONTEXT HELPERS
+//=====================================
+
+// used to setup key for setting request context data
+type ContextKey string
+
+// retrieves a map to be used as a global context for the app
+func MakeGlobalContext() map[string]any {
+	return make(map[string]any)
+}
+
+// sets a value on the global context
+func SetGlobalContext(globalCtx map[string]any, key string, value any) {
+	globalCtx[key] = value
+}
+
 // to be used inside a middleware or handler to share context data with other middleware/handlers
-func SetCtx(key string, val any, r *http.Request) *http.Request {
-	ctx := context.WithValue(r.Context(), CtxKey(key), val)
+func SetContext(key string, val any, r *http.Request) *http.Request {
+	ctx := context.WithValue(r.Context(), ContextKey(key), val)
 	r = r.WithContext(ctx)
 	return r
 }
 
 // to be used inside a middleware or handler to get context data set in other middleware/handlers
-func GetCtx(key string, r *http.Request) any {
-	val := r.Context().Value(CtxKey(key))
+func GetContext(key string, r *http.Request) any {
+	ctxMap, ok := r.Context().Value(ContextKey("GLOBAL")).(map[string]any)
+	if ok {
+		mapVal := ctxMap[key]
+		if mapVal != nil {
+			return mapVal
+		}
+	}
+	val := r.Context().Value(ContextKey(key))
 	return val
 }
 
+//=====================================
+// TEMPLATING HELPERS
+//=====================================
+
+// executes an html templates while writing the appropriate headers
+func ExecuteTemplate(w http.ResponseWriter, templates *template.Template, filepath string, data any) error {
+	w.Header().Add("Content-Type", "text/html")
+	err := templates.ExecuteTemplate(w, filepath, data)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// parse all the templates found at the provided path
+func ParseTemplates(path string) (*template.Template, error) {
+	templates := template.New("")
+	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() && filepath.Ext(path) == ".html" {
+			_, err := templates.ParseFiles(path)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return templates, nil
+}
+
+//=====================================
+// SERVING
+//=====================================
+
 // serves the application at the given port
 func Serve(mux *http.ServeMux, port string) error {
-	fmt.Println("starting server on port " + port + " 💎")
+	fmt.Println("starting server on port " + port + " 🚀")
 	err := http.ListenAndServe(":"+port, mux)
 	if err != nil {
 		return err
