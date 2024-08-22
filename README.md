@@ -46,7 +46,7 @@ func main() {
 
 ## Middleware
 
-make a new middleware
+copy and paste the middleware skelenton
 ```go
 func NewMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -65,7 +65,7 @@ func main() {
 	vbf.AddRoute("GET /", mux, gCtx, func(w http.ResponseWriter, r *http.Request) {
         val, _ := vbf.GetContext("KEY", r).(string) // <--- convert back to string
 		vbf.WriteHTML(w, val)
-	}, vbf.MwLogger, NewMiddleware) // <--- middlware added here
+	}, vbf.MwLogger, NewMiddleware) // <--- middlware chained
 
     // --snip
 }
