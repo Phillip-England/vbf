@@ -139,6 +139,14 @@ func GetContext(key string, r *http.Request) any {
 }
 
 //=====================================
+// GENERALY UTILITY FUNCS
+//=====================================
+
+func SafeString(component string, args ...any) string {
+	return template.HTMLEscapeString(fmt.Sprintf(component, args...))
+}
+
+//=====================================
 // TEMPLATING HELPERS
 //=====================================
 

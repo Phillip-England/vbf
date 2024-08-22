@@ -9,8 +9,10 @@ func Test_VBF(t *testing.T) {
 
 	mux, gCtx := VeryBestFramework()
 
+	component := SafeString("Hello, %s", "John")
+
 	AddRoute("GET /", mux, gCtx, func(w http.ResponseWriter, r *http.Request) {
-		WriteHTML(w, "<h1>Hello, World!</h1>")
+		WriteHTML(w, component)
 	}, MwLogger)
 
 	err := Serve(mux, "8080")
