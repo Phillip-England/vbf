@@ -1,5 +1,6 @@
 # vbf (Very Best Framework)
 **v**ery **b**est **f**ramework ✨
+
 A set of functions which make it easier to work with the go standard http library. That's it. 💣
 
 ## Quickstart
