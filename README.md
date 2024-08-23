@@ -70,3 +70,31 @@ func main() {
     // --snip
 }
 ```
+
+## Web Components
+
+a shell for a basic web component
+```js
+class WebComponent extends HTMLElement {
+
+    constructor() {
+        super()
+    }
+
+    disconnectedCallback() {}
+    attributeChangedCallback(name, oldValue, newValue) {}
+    static get observedAttributes() { /* return ['some-attribute']; */ }
+    connectedCallback() {
+        this.render()
+    }
+
+    render() {
+        this.innerHTML = /*html*/ `
+            
+        `
+    }
+
+}
+
+customElements.define('web-component', WebComponent)
+```

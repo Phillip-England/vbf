@@ -19,7 +19,7 @@ func VeryBestFramework() (*http.ServeMux, map[string]any) {
 	mux := http.NewServeMux()
 	HandleFavicon(mux)
 	HandleStaticFiles(mux)
-	return http.NewServeMux(), make(map[string]any)
+	return mux, make(map[string]any)
 }
 
 //=====================================
