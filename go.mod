@@ -9,6 +9,7 @@ require (
 
 require (
 	github.com/Phillip-England/ffh v1.0.10 // indirect
+	github.com/a-h/templ v0.2.771
 	github.com/alecthomas/chroma/v2 v2.14.0 // indirect
 	github.com/dlclark/regexp2 v1.11.0 // indirect
 )

@@ -2,6 +2,8 @@ github.com/Phillip-England/ffh v1.0.9 h1:dFMrfxHXcuamaHy6LhOWp6WZrglU2IadHz6jlTb
 github.com/Phillip-England/ffh v1.0.9/go.mod h1:TYE1GbwuKnpxvG1MDvH4Vze5uFMgjXIJFVqbGN/R9Y8=
 github.com/Phillip-England/ffh v1.0.10 h1:Nq3CUkfACtI6rocSbajmOKuHEfKARZ9xmJY6fnSUuoQ=
 github.com/Phillip-England/ffh v1.0.10/go.mod h1:TYE1GbwuKnpxvG1MDvH4Vze5uFMgjXIJFVqbGN/R9Y8=
+github.com/a-h/templ v0.2.771 h1:4KH5ykNigYGGpCe0fRJ7/hzwz72k3qFqIiiLLJskbSo=
+github.com/a-h/templ v0.2.771/go.mod h1:lq48JXoUvuQrU0VThrK31yFwdRjTCnIE5bcPCM9IP1w=
 github.com/alecthomas/chroma/v2 v2.2.0 h1:Aten8jfQwUqEdadVFFjNyjx7HTexhKP0XuqBG67mRDY=
 github.com/alecthomas/chroma/v2 v2.2.0/go.mod h1:vf4zrexSH54oEjJ7EdB65tGNHmH3pGZmVkgTP5RHvAs=
 github.com/alecthomas/chroma/v2 v2.14.0 h1:R3+wzpnUArGcQz7fCETQBzO5n9IMNi13iIs46aU4V9E=
