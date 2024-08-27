@@ -1,0 +1,32 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/output.css" />
+    <script src="/static/index.js"></script>
+    <title>{{ .Title }}</title>
+</head>
+<body class="h-100vh">
+    <div id="root" class="grid grid-cols-4 close">
+        <div id="header" class="flex w-full row-span-1 col-span-4">
+            {{ template "header" . }}
+        </div>
+        <div id="menu" class="" class="row-start-2 col-start-2">menu</div>
+        <div id="main" class="relative">
+            <div id="main-overlay" class="h-full w-full absolute"></div>
+            {{ template "main" . }}
+        </div>
+    </div>
+    <script>
+
+        events.forEach(event => {
+            event()
+        })
+
+
+    </script>
+</body>
+</html>
