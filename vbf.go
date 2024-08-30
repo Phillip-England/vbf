@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"github.com/Phillip-England/ffh"
-	"github.com/Phillip-England/gsc"
 	"github.com/a-h/templ"
 	chromahtml "github.com/alecthomas/chroma/v2/formatters/html"
 	"github.com/yuin/goldmark"
@@ -108,11 +107,6 @@ func WriteTempl(w http.ResponseWriter, r *http.Request, component templ.Componen
 		return err
 	}
 	return nil
-}
-
-func WriteGSC(w http.ResponseWriter, component gsc.Component) {
-	w.Header().Add("Content-Type", "text/html")
-	w.Write([]byte(string(component)))
 }
 
 //=====================================
