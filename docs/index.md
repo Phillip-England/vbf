@@ -1,3 +1,5 @@
 # Introduction
 
-very best framework, or vbs for short.
+## Inspiration
+
+What if we didn't need a new templating system?

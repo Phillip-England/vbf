@@ -296,6 +296,16 @@ func ParseTemplates(path string) (*template.Template, error) {
 	return templates, nil
 }
 
+// TemplateToString renders a template with the provided data and returns the result as a string.
+func TemplateToString(templates *template.Template, filepath string, data any) (string, error) {
+	var buf bytes.Buffer
+	err := templates.ExecuteTemplate(&buf, filepath, data)
+	if err != nil {
+		return "", err
+	}
+	return buf.String(), nil
+}
+
 //=====================================
 // SERVING
 //=====================================

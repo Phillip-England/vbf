@@ -5,21 +5,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/output.css" />
-    <script src="/static/index.js"></script>
+    <link rel="stylesheet" href="/static/css/index.css" />
+    <script src="/static/js/index.js"></script>
     <title>{{ .Title }}</title>
 </head>
-<body class="h-100vh">
-    <div id="root" class="grid grid-cols-4 close">
-        <div id="header" class="flex w-full row-span-1 col-span-4">
-            {{ template "header" . }}
-        </div>
-        <div id="menu" class="" class="row-start-2 col-start-2">menu</div>
-        <div id="main" class="relative">
-            <div id="main-overlay" class="h-full w-full absolute"></div>
-            {{ template "main" . }}
-        </div>
+<body>
+
+    <div id="root">
+
+        <!-- header -->
+        <header>
+            <div id="header-text">
+                <h2>{{ .HeaderText }}</h2>
+                <p>{{ .SubText }}</p>
+            </div>
+            <div id="icon-wrapper">
+                <div id="bars">
+                    <svg  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h14"/>
+                    </svg>
+                </div>
+                <div id="x" class="hidden">
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
+                    </svg>
+                </div>
+            </div>
+        </header>
+
+        <!-- menu -->
+        <!-- <nav>menu</nav> -->
+
+        <!-- main content -->
+        <main>
+            <div id="main-overlay"></div>
+            {{ .MdContent }}
+        </main>
+
     </div>
+
+    
     <script>
 
         events.forEach(event => {
