@@ -93,6 +93,16 @@ func HandleStaticFiles(mux *http.ServeMux, middleware ...func(http.Handler) http
 // REQUEST / RESPONSE HELPERS
 //=====================================
 
+// gets a url param
+func Param(r *http.Request, paramName string) string {
+	return r.URL.Query().Get(paramName)
+}
+
+// compares a provided value to a url query param
+func ParamIs(r *http.Request, paramName string, valueToCheck string) bool {
+	return r.URL.Query().Get(paramName) == valueToCheck
+}
+
 // responses from a handler with a string while setting the appropriate headers
 func WriteHTML(w http.ResponseWriter, content string) {
 	w.Header().Add("Content-Type", "text/html")
