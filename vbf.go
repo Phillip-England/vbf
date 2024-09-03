@@ -84,6 +84,17 @@ func HandleStaticFiles(mux *http.ServeMux, middleware ...func(http.Handler) http
 		chain(func(w http.ResponseWriter, r *http.Request) {
 			filePath := r.URL.Path[len("/static/"):]
 			fullPath := filepath.Join(".", "static", filePath)
+			ext := strings.ToLower(filepath.Ext(filePath))
+			var contentType string
+			switch ext {
+			case ".js":
+				contentType = "application/javascript"
+			case ".css":
+				contentType = "text/css"
+			default:
+				contentType = "application/octet-stream"
+			}
+			w.Header().Set("Content-Type", contentType)
 			http.ServeFile(w, r, fullPath)
 		}, middleware...).ServeHTTP(w, r)
 	})
