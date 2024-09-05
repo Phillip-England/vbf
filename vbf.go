@@ -27,8 +27,6 @@ import (
 // gives you a few things you need to get an app up and running
 func VeryBestFramework() (*http.ServeMux, map[string]any) {
 	mux := http.NewServeMux()
-	HandleFavicon(mux)
-	HandleStaticFiles(mux)
 	return mux, make(map[string]any)
 }
 
