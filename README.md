@@ -33,7 +33,7 @@ func main() {
     vbf.SetGlobalContext(gCtx, "KEY", "<h1>Hello, Context!</h1>") // <--- string
 
 	vbf.AddRoute("GET /", mux, gCtx, func(w http.ResponseWriter, r *http.Request) {
-        val, _ := vbf.GetContext("KEY", r).(string) // <--- convert back to string
+    val, _ := vbf.GetContext("KEY", r).(string) // <--- convert back to string
 		vbf.WriteHTML(w, val)
 	}, vbf.MwLogger)
 
