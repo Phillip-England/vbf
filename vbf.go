@@ -78,7 +78,7 @@ func HandleFavicon(mux *http.ServeMux, middleware ...func(http.Handler) http.Han
 
 // when called, your server will serve static files if located at `./static`
 func HandleStaticFiles(mux *http.ServeMux, middleware ...func(http.Handler) http.Handler) {
-	mux.HandleFunc("GET /static/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
 		chain(func(w http.ResponseWriter, r *http.Request) {
 			filePath := r.URL.Path[len("/static/"):]
 			fullPath := filepath.Join(".", "static", filePath)
@@ -89,6 +89,8 @@ func HandleStaticFiles(mux *http.ServeMux, middleware ...func(http.Handler) http
 				contentType = "application/javascript"
 			case ".css":
 				contentType = "text/css"
+			case ".svg":
+				contentType = "image/svg+xml"
 			default:
 				contentType = "application/octet-stream"
 			}
