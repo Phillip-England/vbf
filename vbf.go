@@ -195,6 +195,8 @@ func SafeString(component string, args ...any) string {
 }
 
 // takes a .md file and converts the file to HTML using goldmark, also handlers coloring code blocks
+// WARNING: any HTML entities within your markdown content will be loaded AS IS and will not be escaped
+// this means this func needs to handled with caution
 func LoadMarkdown(filepath string) (string, error) {
 	mdContent, err := ffh.ReadFile(filepath)
 	if err != nil {
@@ -212,6 +214,9 @@ func LoadMarkdown(filepath string) (string, error) {
 		goldmark.WithRendererOptions(
 			html.WithHardWraps(),
 			html.WithXHTML(),
+		),
+		goldmark.WithRendererOptions(
+			html.WithUnsafe(),
 		),
 	)
 	var buf bytes.Buffer
