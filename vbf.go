@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/Phillip-England/ffh"
@@ -25,8 +24,8 @@ import (
 //=====================================
 
 // gives you a few things you need to get an app up and running
-func VeryBestFramework() (*http.ServeMux, map[string]any) {
-	mux := http.NewServeMux()
+func VeryBestFramework() (mux *http.ServeMux, gCtx map[string]any) {
+	mux = http.NewServeMux()
 	return mux, make(map[string]any)
 }
 
@@ -78,24 +77,26 @@ func HandleFavicon(mux *http.ServeMux, middleware ...func(http.Handler) http.Han
 
 // when called, your server will serve static files if located at `./static`
 func HandleStaticFiles(mux *http.ServeMux, middleware ...func(http.Handler) http.Handler) {
-	mux.HandleFunc("GET /static/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
 		chain(func(w http.ResponseWriter, r *http.Request) {
 			filePath := r.URL.Path[len("/static/"):]
 			fullPath := filepath.Join(".", "static", filePath)
-			ext := strings.ToLower(filepath.Ext(filePath))
-			var contentType string
-			switch ext {
-			case ".js":
-				contentType = "application/javascript"
-			case ".css":
-				contentType = "text/css"
-			case ".svg":
-				contentType = "image/svg+xml"
-			default:
-				contentType = "application/octet-stream"
+			file, err := os.Open(fullPath)
+			if err != nil {
+				http.Error(w, "File not found", http.StatusNotFound)
+				return
 			}
+			defer file.Close()
+			buffer := make([]byte, 512)
+			_, err = file.Read(buffer)
+			if err != nil {
+				http.Error(w, "Unable to read file", http.StatusInternalServerError)
+				return
+			}
+			contentType := http.DetectContentType(buffer)
 			w.Header().Set("Content-Type", contentType)
-			http.ServeFile(w, r, fullPath)
+			file.Seek(0, 0)
+			http.ServeContent(w, r, filePath, time.Now(), file)
 		}, middleware...).ServeHTTP(w, r)
 	})
 }
