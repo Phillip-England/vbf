@@ -1,4 +1,4 @@
-module github.com/Phillip-England/vbf
+module github.com/phillip-england/vbf
 
 go 1.23.0
 
@@ -9,7 +9,6 @@ require (
 )
 
 require (
-	github.com/Phillip-England/gsc v0.0.5
 	github.com/alecthomas/chroma/v2 v2.14.0
 	github.com/dlclark/regexp2 v1.11.0 // indirect
 	github.com/yuin/goldmark-highlighting/v2 v2.0.0-20230729083705-37449abec8cc
