@@ -77,6 +77,29 @@ func HandleFavicon(mux *http.ServeMux, middleware ...func(http.Handler) http.Han
 
 // when called, your server will serve static files if located at `./static`
 func HandleStaticFiles(mux *http.ServeMux, middleware ...func(http.Handler) http.Handler) {
+	contentTypes := map[string]string{
+		".html":  "text/html",
+		".css":   "text/css",
+		".js":    "application/javascript",
+		".png":   "image/png",
+		".jpg":   "image/jpeg",
+		".jpeg":  "image/jpeg",
+		".gif":   "image/gif",
+		".svg":   "image/svg+xml",
+		".json":  "application/json",
+		".xml":   "application/xml",
+		".txt":   "text/plain",
+		".pdf":   "application/pdf",
+		".woff":  "font/woff",
+		".woff2": "font/woff2",
+		".ttf":   "font/ttf",
+		".eot":   "application/vnd.ms-fontobject",
+		".ico":   "image/x-icon",
+		".zip":   "application/zip",
+		".tar":   "application/x-tar",
+		".gz":    "application/gzip",
+	}
+
 	mux.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
 		chain(func(w http.ResponseWriter, r *http.Request) {
 			filePath := r.URL.Path[len("/static/"):]
@@ -87,15 +110,12 @@ func HandleStaticFiles(mux *http.ServeMux, middleware ...func(http.Handler) http
 				return
 			}
 			defer file.Close()
-			buffer := make([]byte, 512)
-			_, err = file.Read(buffer)
-			if err != nil {
-				http.Error(w, "Unable to read file", http.StatusInternalServerError)
-				return
+			ext := filepath.Ext(filePath)
+			contentType, found := contentTypes[ext]
+			if !found {
+				contentType = "application/octet-stream" // Default content type
 			}
-			contentType := http.DetectContentType(buffer)
 			w.Header().Set("Content-Type", contentType)
-			file.Seek(0, 0)
 			http.ServeContent(w, r, filePath, time.Now(), file)
 		}, middleware...).ServeHTTP(w, r)
 	})
