@@ -218,7 +218,7 @@ func SafeString(component string, args ...any) string {
 // takes a .md file and converts the file to HTML using goldmark, also handlers coloring code blocks
 // WARNING: any HTML entities within your markdown content will be loaded AS IS and will not be escaped
 // this means this func needs to handled with caution
-func LoadMarkdown(filepath string) (string, error) {
+func LoadMarkdown(filepath string, style string) (string, error) {
 	mdContent, err := ffh.ReadFile(filepath)
 	if err != nil {
 		return "", err
@@ -226,7 +226,7 @@ func LoadMarkdown(filepath string) (string, error) {
 	md := goldmark.New(
 		goldmark.WithExtensions(
 			highlighting.NewHighlighting(
-				highlighting.WithStyle("monokai"),
+				highlighting.WithStyle(style),
 				highlighting.WithFormatOptions(
 					chromahtml.WithLineNumbers(true),
 				),
@@ -279,8 +279,8 @@ func ExecuteTemplate(w http.ResponseWriter, templates *template.Template, filepa
 }
 
 // parse all the templates found at the provided path
-func ParseTemplates(path string) (*template.Template, error) {
-	templates := template.New("")
+func ParseTemplates(path string, funcMap template.FuncMap) (*template.Template, error) {
+	templates := template.New("").Funcs(funcMap)
 	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err

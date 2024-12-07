@@ -12,7 +12,7 @@ func Test_VBF(t *testing.T) {
 
 	mux, gCtx := VeryBestFramework()
 
-	templates, err := ParseTemplates("./templates")
+	templates, err := ParseTemplates("./templates", nil)
 	if err != nil {
 		panic(err)
 	}
@@ -24,7 +24,7 @@ func Test_VBF(t *testing.T) {
 	AddRoute("GET /", mux, gCtx, func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/" {
 			templates, _ := GetContext(KEY_TEMPLATES, r).(*template.Template)
-			mdContent, err := LoadMarkdown("./static/docs/content.md")
+			mdContent, err := LoadMarkdown("./static/docs/content.md", "dracula")
 			if err != nil {
 				WriteString(w, "internal server error")
 				return
