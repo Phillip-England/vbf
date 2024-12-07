@@ -287,6 +287,7 @@ func LoadMarkdown(mdPath string, theme string) (string, error) {
 			if goquery.NodeName(parent) == "pre" {
 				return
 			}
+			inner.SetAttr("class", "custom-scroll")
 			inner.SetAttr("style", currentStyle+"font-family: monospace; background-color: #1f2937; padding: 0.25rem 0.5rem; border-radius: 0.25rem;")
 		case "hr":
 			inner.SetAttr("style", currentStyle+"border: none; border-top: 1px solid #ccc; margin: 2rem 0;")
