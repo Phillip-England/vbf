@@ -265,6 +265,7 @@ func LoadMarkdown(mdPath string, theme string) (string, error) {
 		currentStyle, _ := inner.Attr("style")
 		switch nodeName {
 		case "pre":
+			inner.SetAttr("class", "custom-scroll")
 			inner.SetAttr("style", currentStyle+"padding: 1rem; font-size: 0.875rem; overflow-x: auto; border-radius: 0.25rem; margin-bottom: 1rem;")
 		case "h1":
 			inner.SetAttr("style", currentStyle+"font-weight: bold; font-size: 1.875rem; padding-bottom: 1rem;")
@@ -287,7 +288,6 @@ func LoadMarkdown(mdPath string, theme string) (string, error) {
 			if goquery.NodeName(parent) == "pre" {
 				return
 			}
-			inner.SetAttr("class", "custom-scroll")
 			inner.SetAttr("style", currentStyle+"font-family: monospace; background-color: #1f2937; padding: 0.25rem 0.5rem; border-radius: 0.25rem;")
 		case "hr":
 			inner.SetAttr("style", currentStyle+"border: none; border-top: 1px solid #ccc; margin: 2rem 0;")
