@@ -288,7 +288,7 @@ func LoadMarkdown(mdPath string, theme string) (string, error) {
 			if goquery.NodeName(parent) == "pre" {
 				return
 			}
-			inner.SetAttr("style", currentStyle+"font-family: monospace; background-color: #1f2937; padding: 0.25rem 0.5rem; border-radius: 0.25rem;")
+			inner.SetAttr("style", currentStyle+"font-family: monospace; padding: 0.10rem 0.10rem; border-radius: 0.25rem; font-size: 0.875rem; border:solid #1f2937 1px;")
 		case "hr":
 			inner.SetAttr("style", currentStyle+"border: none; border-top: 1px solid #ccc; margin: 2rem 0;")
 		case "a":
