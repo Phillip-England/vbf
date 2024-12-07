@@ -100,7 +100,7 @@ func HandleStaticFiles(mux *http.ServeMux, middleware ...func(http.Handler) http
 		".gz":    "application/gzip",
 	}
 
-	mux.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /static/", func(w http.ResponseWriter, r *http.Request) {
 		chain(func(w http.ResponseWriter, r *http.Request) {
 			filePath := r.URL.Path[len("/static/"):]
 			fullPath := filepath.Join(".", "static", filePath)
