@@ -3,9 +3,14 @@ module github.com/phillip-england/vbf
 go 1.23.0
 
 require (
-	github.com/Phillip-England/ffh v1.0.11
+	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/a-h/templ v0.2.771
 	github.com/yuin/goldmark v1.7.4
+)
+
+require (
+	github.com/andybalholm/cascadia v1.3.1 // indirect
+	golang.org/x/net v0.28.0 // indirect
 )
 
 require (

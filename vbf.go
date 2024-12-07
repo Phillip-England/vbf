@@ -9,14 +9,16 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
-	"github.com/Phillip-England/ffh"
+	"github.com/PuerkitoBio/goquery"
 	"github.com/a-h/templ"
 	chromahtml "github.com/alecthomas/chroma/v2/formatters/html"
 	"github.com/yuin/goldmark"
 	highlighting "github.com/yuin/goldmark-highlighting/v2"
-	"github.com/yuin/goldmark/renderer/html"
+	"github.com/yuin/goldmark/parser"
+	goldmarkhtml "github.com/yuin/goldmark/renderer/html"
 )
 
 //=====================================
@@ -218,34 +220,87 @@ func SafeString(component string, args ...any) string {
 // takes a .md file and converts the file to HTML using goldmark, also handlers coloring code blocks
 // WARNING: any HTML entities within your markdown content will be loaded AS IS and will not be escaped
 // this means this func needs to handled with caution
-func LoadMarkdown(filepath string, style string) (string, error) {
-	mdContent, err := ffh.ReadFile(filepath)
+func LoadMarkdown(mdPath string, theme string) (string, error) {
+	if len(mdPath) == 0 {
+		fmt.Println("_md elements require a valid path")
+	}
+	firstChar := string(mdPath[0])
+	if firstChar != "." {
+		mdPath = "." + mdPath
+	}
+	mdFileContent, err := os.ReadFile(mdPath)
 	if err != nil {
 		return "", err
 	}
 	md := goldmark.New(
 		goldmark.WithExtensions(
 			highlighting.NewHighlighting(
-				highlighting.WithStyle(style),
+				highlighting.WithStyle(theme),
 				highlighting.WithFormatOptions(
 					chromahtml.WithLineNumbers(true),
 				),
 			),
 		),
-		goldmark.WithRendererOptions(
-			html.WithHardWraps(),
-			html.WithXHTML(),
+		goldmark.WithParserOptions(
+			parser.WithAutoHeadingID(),
 		),
 		goldmark.WithRendererOptions(
-			html.WithUnsafe(),
+			goldmarkhtml.WithHardWraps(),
+			goldmarkhtml.WithXHTML(),
+			goldmarkhtml.WithUnsafe(),
 		),
 	)
 	var buf bytes.Buffer
-	if err := md.Convert([]byte(mdContent), &buf); err != nil {
+	err = md.Convert([]byte(mdFileContent), &buf)
+	if err != nil {
 		return "", err
 	}
-	html := buf.String()
-	return html, nil
+	str := buf.String()
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(str))
+	if err != nil {
+		return "", err
+	}
+	doc.Find("*").Each(func(i int, inner *goquery.Selection) {
+		nodeName := goquery.NodeName(inner)
+		currentStyle, _ := inner.Attr("style")
+		switch nodeName {
+		case "pre":
+			inner.SetAttr("style", currentStyle+"padding: 1rem; font-size: 0.875rem; overflow-x: auto; border-radius: 0.25rem; margin-bottom: 1rem;")
+		case "h1":
+			inner.SetAttr("style", currentStyle+"font-weight: bold; font-size: 1.875rem; padding-bottom: 1rem;")
+		case "h2":
+			inner.SetAttr("style", currentStyle+"font-size: 1.5rem; font-weight: bold; padding-bottom: 1rem; padding-top: 0.5rem; border-top-width: 1px; border-top-style: solid; border-color: #1f2937; padding-top: 1rem;")
+		case "h3":
+			inner.SetAttr("style", currentStyle+"font-size: 1.25rem; font-weight: bold; margin-top: 1.5rem; margin-bottom: 1rem;")
+		case "p":
+			inner.SetAttr("style", currentStyle+"font-size: 0.875rem; line-height: 1.5; margin-bottom: 1rem;")
+		case "ul":
+			inner.SetAttr("style", currentStyle+"padding-left: 1.5rem; margin-bottom: 1rem; list-style-type: disc;")
+		case "ol":
+			inner.SetAttr("style", currentStyle+"padding-left: 1.5rem; margin-bottom: 1rem; list-style-type: decimal;")
+		case "li":
+			inner.SetAttr("style", currentStyle+"margin-bottom: 0.5rem;")
+		case "blockquote":
+			inner.SetAttr("style", currentStyle+"margin-left: 1rem; padding-left: 1rem; border-left: 4px solid #ccc; font-style: italic; color: #555;")
+		case "code":
+			parent := inner.Parent()
+			if goquery.NodeName(parent) == "pre" {
+				return
+			}
+			inner.SetAttr("style", currentStyle+"font-family: monospace; background-color: #1f2937; padding: 0.25rem 0.5rem; border-radius: 0.25rem;")
+		case "hr":
+			inner.SetAttr("style", currentStyle+"border: none; border-top: 1px solid #ccc; margin: 2rem 0;")
+		case "a":
+			inner.SetAttr("style", currentStyle+"color: #007BFF; text-decoration: none;")
+		case "img":
+			inner.SetAttr("style", currentStyle+"max-width: 100%; height: auto; border-radius: 0.25rem; margin: 1rem 0;")
+		}
+	})
+	modifiedHTML, err := doc.Html()
+	if err != nil {
+		return "", err
+	}
+	return modifiedHTML, nil
 }
 
 // generate a random string for your random-string purposes
