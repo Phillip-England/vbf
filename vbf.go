@@ -260,43 +260,6 @@ func LoadMarkdown(mdPath string, theme string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	doc.Find("*").Each(func(i int, inner *goquery.Selection) {
-		nodeName := goquery.NodeName(inner)
-		currentStyle, _ := inner.Attr("style")
-		switch nodeName {
-		case "pre":
-			inner.SetAttr("class", "custom-scroll")
-			inner.SetAttr("style", currentStyle+"padding: 1rem; font-size: 0.875rem; overflow-x: auto; border-radius: 0.25rem; margin-bottom: 1rem;")
-		case "h1":
-			inner.SetAttr("style", currentStyle+"font-weight: bold; font-size: 1.875rem; padding-bottom: 1rem;")
-		case "h2":
-			inner.SetAttr("style", currentStyle+"font-size: 1.5rem; font-weight: bold; padding-bottom: 1rem; padding-top: 0.5rem; padding-top: 1rem;")
-		case "h3":
-			inner.SetAttr("style", currentStyle+"font-size: 1.25rem; font-weight: bold; margin-top: 1.5rem; margin-bottom: 1rem;")
-		case "p":
-			inner.SetAttr("style", currentStyle+"font-size: 0.875rem; line-height: 1.5; margin-bottom: 1rem;")
-		case "ul":
-			inner.SetAttr("style", currentStyle+"padding-left: 1.5rem; margin-bottom: 1rem; list-style-type: disc;")
-		case "ol":
-			inner.SetAttr("style", currentStyle+"padding-left: 1.5rem; margin-bottom: 1rem; list-style-type: decimal;")
-		case "li":
-			inner.SetAttr("style", currentStyle+"margin-bottom: 0.5rem;")
-		case "blockquote":
-			inner.SetAttr("style", currentStyle+"margin-left: 1rem; padding-left: 1rem; border-left: 4px solid #ccc; font-style: italic; color: #555;")
-		case "code":
-			parent := inner.Parent()
-			if goquery.NodeName(parent) == "pre" {
-				return
-			}
-			inner.SetAttr("style", currentStyle+"font-family: monospace; padding: 0.10rem 0.10rem; border-radius: 0.25rem; font-size: 0.875rem; border:solid #1f2937 1px;")
-		case "hr":
-			inner.SetAttr("style", currentStyle+"border: none; border-top: 1px solid #ccc; margin: 2rem 0;")
-		case "a":
-			inner.SetAttr("style", currentStyle+"color: #007BFF; text-decoration: none;")
-		case "img":
-			inner.SetAttr("style", currentStyle+"max-width: 100%; height: auto; border-radius: 0.25rem; margin: 1rem 0;")
-		}
-	})
 	modifiedHTML, err := doc.Html()
 	if err != nil {
 		return "", err
