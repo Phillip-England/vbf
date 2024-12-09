@@ -336,7 +336,16 @@ func ExecuteTemplate(w http.ResponseWriter, templates *template.Template, filepa
 
 // parse all the templates found at the provided path
 func ParseTemplates(path string, funcMap template.FuncMap) (*template.Template, error) {
-	templates := template.New("").Funcs(funcMap)
+	strEquals := func(input string, value string) bool {
+		return input == value
+	}
+	vbfFuncMap := template.FuncMap{
+		"strEquals": strEquals,
+	}
+	for k, v := range funcMap {
+		vbfFuncMap[k] = v
+	}
+	templates := template.New("").Funcs(vbfFuncMap)
 	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
