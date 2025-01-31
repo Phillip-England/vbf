@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/rand"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -154,6 +155,20 @@ func WriteTempl(w http.ResponseWriter, r *http.Request, component templ.Componen
 	w.Header().Add("Content-Type", "text/html")
 	err := component.Render(r.Context(), w)
 	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// WriteJSON responds from a handler with JSON while setting the appropriate headers
+func WriteJSON(w http.ResponseWriter, statusCode int, data interface{}) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+
+	// Encode data to JSON and write it to the response
+	err := json.NewEncoder(w).Encode(data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return err
 	}
 	return nil
