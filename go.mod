@@ -1,4 +1,4 @@
-module github.com/phillip-england/vbf
+module github.com/Phillip-England/vbf
 
 go 1.23.0
 
