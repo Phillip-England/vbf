@@ -239,7 +239,7 @@ func GetContext(key string, r *http.Request) any {
 }
 
 //=====================================
-// GENERALY UTILITY FUNCS
+// GENERAL UTILITY FUNCS
 //=====================================
 
 // ensures an html string is safe
